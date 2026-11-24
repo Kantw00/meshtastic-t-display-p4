@@ -1,0 +1,30 @@
+{
+  "chip": "esp32c6",
+  "version": "esp-hosted 2.12.13",
+  "images": [
+    {
+      "file": "bootloader.bin",
+      "offset": "0x0",
+      "size": 23920,
+      "md5": "1a14fe840016aaadfaa0f0c9c6a8ceb2"
+    },
+    {
+      "file": "partition-table.bin",
+      "offset": "0x8000",
+      "size": 3072,
+      "md5": "4ecb8e884df0fdc3aff34746296918be"
+    },
+    {
+      "file": "ota_data_initial.bin",
+      "offset": "0xd000",
+      "size": 8192,
+      "md5": "84d04c9d6cc8ef35bf825d51a5277699"
+    },
+    {
+      "file": "network_adapter.bin",
+      "offset": "0x10000",
+      "size": 1227152,
+      "md5": "0f811591088e51139c0e1bebccb50ce9"
+    }
+  ]
+}
