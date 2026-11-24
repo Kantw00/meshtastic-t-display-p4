@@ -67,8 +67,12 @@ void earlyInitVariant()
     ldoSdIoResult = ldoAcquireChannel(4, 3300, false, &ldoSdIo);
 
     if (expanderFound) {
-        delay(20); // radio NRST low and SD VDD off since the boot latch
+        delay(20); // radio NRST low, C6 EN low and SD VDD off since the boot latch
         xl9535IoExpander.digitalWrite(EXIO_LORA_NRST, HIGH);
+        // The C6 runs from here on, whether or not BLE or WiFi get used: only the P4 can release it, and it
+        // has to be out of reset to be flashed through its own UART connector. This EN edge is also what
+        // samples the C6 BOOT button: held during a P4 reset, the C6 waits in ROM download mode.
+        xl9535IoExpander.digitalWrite(EXIO_C6_EN, HIGH);
         delay(10);
         xl9535IoExpander.digitalWrite(EXIO_SD_PWR_N, LOW); // SD VDD on, after about 30 ms off
     }
@@ -132,8 +136,13 @@ void variant_shutdown()
 }
 
 // The ESP32-C6 EN line is XL9535 IO14 (1 = run); esp_hosted only gets a dummy reset GPIO.
+// The C6 is never parked in reset while the P4 runs (see earlyInitVariant): assertReset = true is ignored,
+// assertReset = false restarts it so that the transport comes up against a freshly booted co-processor.
 bool variantHostedSlaveReset(bool assertReset)
 {
+    if (assertReset)
+        return true;
+
     if (!xl9535IoExpander.isReady()) {
         static bool reported = false;
         if (!reported) {
@@ -144,9 +153,6 @@ bool variantHostedSlaveReset(bool assertReset)
     }
 
     xl9535IoExpander.digitalWrite(EXIO_C6_EN, LOW);
-    if (assertReset)
-        return true;
-
     delay(50);
     xl9535IoExpander.digitalWrite(EXIO_C6_EN, HIGH);
     delay(50);

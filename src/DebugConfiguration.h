@@ -218,7 +218,14 @@ extern "C" void logLegacy(const char *level, const char *fmt, ...);
 #endif // HAS_ETHERNET
 
 #if HAS_WIFI
+#if defined(CONFIG_IDF_TARGET_ESP32P4)
+// device-ui includes this header and declares its own WiFiServer / WiFiEvent_t stand-ins on the ESP32-P4,
+// which clash with <WiFi.h>: only pull in what Syslog below needs.
+#include <IPAddress.h>
+#include <Udp.h>
+#else
 #include <WiFi.h>
+#endif
 #endif // HAS_WIFI
 
 #if HAS_NETWORKING

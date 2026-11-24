@@ -23,6 +23,9 @@
 #include "Router.h"
 #include "configuration.h"
 #include "main.h"
+#if HAS_WIFI
+#include <WiFi.h>
+#endif
 #ifdef ARCH_NRF52
 #include "main.h"
 #endif

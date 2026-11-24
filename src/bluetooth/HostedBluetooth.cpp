@@ -29,6 +29,9 @@
 #include <cstring>
 #include <driver/gpio.h>
 #include <mutex>
+#if HAS_WIFI
+#include <WiFi.h>
+#endif
 
 #include "host/ble_gap.h"
 #include "host/ble_store.h"
@@ -383,6 +386,13 @@ gpio_num_t getSlaveResetGpio()
 
 void setSlaveResetLine(bool assertReset)
 {
+#if HAS_WIFI
+    // WiFi (esp_wifi_remote) runs on the same co-processor and transport: a reset would take it down
+    if (WiFi.getMode() != WIFI_MODE_NULL) {
+        return;
+    }
+#endif
+
     if (variantHostedSlaveReset(assertReset)) {
         return;
     }
@@ -569,7 +579,7 @@ void HostedBluetooth::deinit()
     }
     shutdownGatt();
 
-    // Hold co-processor in reset when hosted transport is disabled to reduce idle draw.
+    // Hold co-processor in reset when hosted transport is disabled to reduce idle draw (unless WiFi uses it).
     setSlaveResetLine(true);
 
     unregisterCallbacks();

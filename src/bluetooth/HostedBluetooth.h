@@ -5,7 +5,8 @@
 
 /** Boards whose co-processor EN/reset line is not a host GPIO override this (variant.cpp).
  *  assertReset = true: hold the co-processor in reset. false: release it and return once it may be addressed.
- *  Return true when the variant drove the line; false falls back to the esp_hosted reset GPIO. */
+ *  Return true when the variant handled the request; false falls back to the esp_hosted reset GPIO.
+ *  Never called while WiFi runs on the co-processor. */
 bool variantHostedSlaveReset(bool assertReset);
 
 /**
